@@ -33,35 +33,41 @@ Object.defineProperties(hotkeys, {
     add: {
         value: function(hotkey, func, options = {}) {
             options = Object.assign({
-                active: true,
+                action: 'down',
+                on: true,
                 context: ()=> true,
                 defaultPrevented: true,
-                action: 'down',
+                func: func,
                 scope: window,
             }, options)
 
+            Object.defineProperties(options, {
+                action: {
+                    value: options.action,
+                    enumerable: true,
+                },
+                active: {
+                    get: function(){
+                        return this.on && this.context();
+                    },
+                    enumerable: true,
+                },
+                event: {
+                    get: function(){
+                        return hotkeys.actionToEvent(this.action)
+                    },
+                    enumerable: true,
+                },
+            });
+
             hotkey = String(hotkey);
-            let {action, scope, context} = options;
+            let {action, event, scope} = options;
             if (hotkey.length === 1 || this.specialKeys.includes(hotkey)) {
-                if (this.listeners.findIndex(l => l.elem == scope && l.event == this.actionToEvent(action)) < 0) {
+                if (this.listeners.findIndex(l => l.elem == scope && l.event == event) < 0) {
                     this.listeners.add(scope, action);
                 }
             }
-            //experiementing
-            Object.defineProperty(options, 'action', {value: action, enumerable: true});
-            /*Object.defineProperties(options, {
-                actions: {
-                    value: action,
-                    enumerable: true,
-                },
-                context: {
-                    get: options.context(),
-                    enumerable: true,
-                },
-            });*/
 
-
-            options.func = func;
             this[action][hotkey] = options;
             return options;
         },
@@ -90,11 +96,7 @@ Object.defineProperties(hotkeys, {
                         if (hotkeys.active) {
                             let hotkey = hotkeys[action][e.code];
                             if (!hotkey) hotkey = hotkeys[action][e.key];
-                            if (
-                                hotkey &&
-                                hotkey.active &&
-                                hotkey.context()
-                            ) {
+                            if (hotkey && hotkey.active) {
                                 if (hotkey.defaultPrevented) e.preventDefault();
                                 hotkey.func(e);
                             }
@@ -106,7 +108,7 @@ Object.defineProperties(hotkeys, {
                     this.push({
                         elem: elem,
                         event: event,
-                        listener: listener,
+                        listener: listener, //used in hotkeys.remove
                     })
                 },
             });
