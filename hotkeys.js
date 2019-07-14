@@ -459,6 +459,27 @@ Object.defineProperties(hotkeys, {
     },
 });
 
+Object.defineProperty(hotkeys, 'state', {
+    value: (function(){
+        let state = {}
+        for (let key of hotkeys.names) {
+            state[key] = 'up';
+        }
+
+        window.addEventListener('keydown', function(e) {
+            hotkeys.state[e.key] = 'down';
+            hotkeys.state[e.code] = 'down';
+        });
+
+        window.addEventListener('keyup', function(e) {
+            hotkeys.state[e.key] = 'up';
+            hotkeys.state[e.code] = 'up';
+        });
+
+        return state;
+    })(),
+});
+
 export default hotkeys;
 
 /*
