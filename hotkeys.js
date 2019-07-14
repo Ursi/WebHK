@@ -27,6 +27,7 @@ Object.defineProperties(hotkeys, {
     },
     add: {
         value: function(hotkey, func, options = {}) {
+            const this0 = this;
             options = Object.assign({
                 action: 'down',
                 on: true,
@@ -49,7 +50,7 @@ Object.defineProperties(hotkeys, {
                 },
                 event: {
                     get: function(){
-                        return hotkeys.actionToEvent(this.action)
+                        return this0.actionToEvent(this.action)
                     },
                     enumerable: true,
                 },
@@ -337,6 +338,7 @@ Object.defineProperties(hotkeys, {
             + - shift,
             A B[ C[ ...]] - A and B together,
             */
+            hkName = String(hkName);
             const errorMsg = 'invalid key name';
             if (/^((  )|\S+ )(\S+ )*\S+$/.test(hkName)) {//multi-key syntax
                 let keyNames = hkName.trim().split(' ');
