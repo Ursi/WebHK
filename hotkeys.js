@@ -1,8 +1,3 @@
-const handler = {
-    setPrototypeOf(targ, proto) {
-
-    }
-}
 const up = {};
 const down = {};
 const hotkeys = Object.create(new Proxy({}, {
