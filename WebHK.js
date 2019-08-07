@@ -1,7 +1,7 @@
 const up = {};
 const down = {};
 const hotkeys = Object.create(new Proxy({}, {
-	get(targ, prop, rec) {
+	get(targ, prop) {
 		if (down.hasOwnProperty(prop)) {
 			return down[prop];
 		} else if (up.hasOwnProperty(prop)) {
